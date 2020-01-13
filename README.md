@@ -1,5 +1,4 @@
 # Rest-Client
-[MIT LICENSE]()
 
 A simple HttpClient for making http requests
 
@@ -82,3 +81,4 @@ Console.Read();
 Pascal Nsunba [Pascal Benstrong](https://github.com/PascalBenstrong/)
 
 ### License
+[MIT LICENSE]()
