@@ -27,25 +27,50 @@ namespace RestApiClientTest
             public string PhoneNumber { get; set; }
         }
 
+        class Post
+        {
+            public int UserId { get; set; }
+            public int Id { get; set; }
+            public string Title { get; set; }
+            public string body { get; set; }
+        }
+
+
+        [URL(@"https://jsonplaceholder.typicode.com")]
+        public interface IExampleInterface
+        {
+            [GET("posts")]
+            Task<Response> Posts();
+            
+            [GET("todos")]
+            Response Todos();
+            
+            [GET("users")]
+            Task<Response> Users();
+        }
         static void Main(string[] args)
         {
 
             Console.WriteLine("Testing");
-            var testService = RestService.getService<ITestService>();
 
-            var t = new Test
+            // Create a new RestService of type IExampleInterface
+            var testService = RestService.GetService<IExampleInterface>();
+
+/*            var t = new Test
             {
                 Password = "password",
                 Email = "example1@gmail.com",
                 PhoneNumber = "1234567890"
-            };
+            };*/
 
-            
-            var result = testService.login(t).Result;
-            var user = result.IsConnectionError ? new Test() : result.GetResult<Test>();
 
-            Console.WriteLine($"Result from Proxy: {result.HttpResponseMessage?.StatusCode}");
+            var response = testService.Posts().Result;
+            //response = await testService.Posts();
+            var posts = response.GetResponse<Post[]>();
+
+            Console.WriteLine($"First Post: {posts[0].Title}");
             Console.Read();
+
         }
     }
 }

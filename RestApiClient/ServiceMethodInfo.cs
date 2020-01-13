@@ -105,18 +105,11 @@ namespace TheProcessE.RestApiClient
                             headersParams.Add(new KeyValuePair<string, string>(h.Key, arguments[i] as string));
                             continue;
                         }
-
-                        if (attr is Headers)
-                        {
-                            var hs = attr as Headers;
-                            headersParams.AddRange(hs.headers);
-                        }
-
                     }
                 }
             }
-            // get the class params and build them
 
+            // get the class params and build them
             var body = bodyTask != null ? await bodyTask : "";
             var content = new StringContent(body);
 
@@ -133,7 +126,7 @@ namespace TheProcessE.RestApiClient
 
             HttpResponseMessage responseM = default;
 
-            Response response;
+            Response response = default;
 
             using (var client = new HttpClient())
             {
@@ -141,25 +134,29 @@ namespace TheProcessE.RestApiClient
                 {
                     try
                     {
+                        if(HttpMethod != HttpMethod.Get)
                         requestM.Content = content;
                         requestM.RequestUri = uri;
                         requestM.Method = HttpMethod;
 
                         responseM = await client.SendAsync(requestM);
 
-                        if (responseM != null && responseM.IsSuccessStatusCode)
+                        
+                        bool isSuccess = responseM != null? responseM.IsSuccessStatusCode : false;
+
+                        if (isSuccess)
                         {
                             var b = await responseM.Content.ReadAsStringAsync();
                             //var result = await Deserialize<object>(b);
                             response = new Response(b, responseM);
                         }
                     }
-                    catch
+                    catch (Exception e)
                     {
-                        
+                        Console.WriteLine(e.Message);
                     }finally
                     {
-                        response = new Response(default, responseM ?? default);
+                        response = response ?? new Response(default, responseM ?? default);
                     }
                 }
             }

@@ -6,10 +6,10 @@
     <title>$title$</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <license type="expression">MIT</license>
-    <!--projectUrl>http://project_url_here_or_delete_this_line/</projectUrl>
-    <iconUrl>http://icon_url_here_or_delete_this_line/</iconUrl-->
+    <projectUrl>https://github.com/PascalBenstrong/Rest-Client.git</projectUrl>
+    <!---->iconUrl>http://icon_url_here_or_delete_this_line/</iconUrl-->
     <description>$description$</description>
     <dependencies>
       <group targetFramework=".NETFramework4.7.2" />

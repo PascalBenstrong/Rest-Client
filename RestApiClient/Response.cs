@@ -9,20 +9,20 @@ namespace TheProcessE.RestApiClient
 {
     public class Response
     {
-        public string Result { get; }
+        public string ResponseBody { get; }
         public HttpResponseMessage HttpResponseMessage { get; }
 
         public bool IsConnectionError => HttpResponseMessage == null || HttpResponseMessage == default;
 
-        internal Response(string result, HttpResponseMessage httpResponseMessage)
+        internal Response(string responseBody, HttpResponseMessage httpResponseMessage)
         {
-            Result = result;
+            ResponseBody = responseBody;
             HttpResponseMessage = httpResponseMessage;
         }
 
-        public TResult GetResult<TResult>()
+        public TResult GetResponse<TResult>()
         {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<TResult>(Result ?? "");
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<TResult>(ResponseBody ?? "");
         }
     }
 }

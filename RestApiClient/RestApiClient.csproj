@@ -58,8 +58,6 @@
     <Compile Include="Response.cs" />
     <Compile Include="RuntimeProxy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RuntimeProxyInterceptor.cs" />
-    <Compile Include="RuntimeProxyInvoker.cs" />
     <Compile Include="ServiceMethodInfo.cs" />
     <Compile Include="RestService.cs" />
     <Compile Include="URL.cs" />

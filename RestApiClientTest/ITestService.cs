@@ -8,7 +8,7 @@ namespace RestApiClientTest
     public interface ITestService
     {
         [POST("login")]
-        Task<Response> login<Data>([BODY]Data data);
+        Response Login<Data>([BODY]Data data);
 
         [GET]
         Task<Response> index();
