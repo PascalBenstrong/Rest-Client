@@ -78,7 +78,7 @@ Console.Read();
 ```
 
 ### Author
-Pascal Nsunba [Pascal Benstrong](https://github.com/PascalBenstrong/)
+[Pascal Nsunba](https://github.com/PascalBenstrong/)
 
 ### License
 [MIT LICENSE](https://github.com/PascalBenstrong/Rest-Client/blob/master/LICENSE)
