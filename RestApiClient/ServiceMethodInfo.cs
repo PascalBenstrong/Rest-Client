@@ -14,7 +14,7 @@ namespace TheProcessE.RestApiClient
         private static ConcurrentDictionary<string, ServiceMethodInfo> cache = new ConcurrentDictionary<string, ServiceMethodInfo>();
         private object[] arguments = Array.Empty<object>();
         private ParameterInfo[] parameters = Array.Empty<ParameterInfo>();
-        private readonly Uri uri;
+        private Uri uri;
         private readonly HttpMethod HttpMethod;
 
         private ServiceMethodInfo(IEnumerable<Attribute> classAttributes, IEnumerable<Attribute> methodAttributes)
@@ -26,7 +26,7 @@ namespace TheProcessE.RestApiClient
                 if (attr is URL)
                 {
                     var u = attr as URL;
-                    url = u.Path;
+                    url = $@"{u.Path}";
                     continue;
                 }
             }
@@ -36,7 +36,7 @@ namespace TheProcessE.RestApiClient
                 if (attr is HttpMethodAttribute)
                 {
                     var u = attr as HttpMethodAttribute;
-                    url += @"/"+ u.Path;
+                    url += $@"/{u.Path}";
 
                     if (HttpMethod != null)
                         throw new NotSupportedException("Service Methods can only have one Http Method Type!");
@@ -96,14 +96,18 @@ namespace TheProcessE.RestApiClient
                         if (attr is BODY)
                         {
                             bodyTask = Serialize(arguments[i]);
-                            continue;
                         }
-
-                        if (attr is Header)
+                        else if (attr is Header)
                         {
                             var h = attr as Header;
                             headersParams.Add(new KeyValuePair<string, string>(h.Key, arguments[i] as string));
                             continue;
+                        }
+                        else if(attr is Param)
+                        {
+                            var param = attr as Param;
+                            string _param = arguments[i].ToString();
+                            uri = new Uri($@"{uri.AbsoluteUri}/{_param}");
                         }
                     }
                 }

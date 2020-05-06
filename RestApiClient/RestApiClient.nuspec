@@ -9,7 +9,7 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <license type="expression">MIT</license>
     <projectUrl>https://github.com/PascalBenstrong/Rest-Client.git</projectUrl>
-    <!---->iconUrl>http://icon_url_here_or_delete_this_line/</iconUrl-->
+    <!--iconUrl>http://icon_url_here_or_delete_this_line/</iconUrl-->
     <description>$description$</description>
     <dependencies>
       <group targetFramework=".NETFramework4.7.2" />
