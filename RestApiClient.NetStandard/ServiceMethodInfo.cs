@@ -1,48 +1,56 @@
-﻿using Newtonsoft.Json;
+﻿
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TheProcessE.RestApiClient
 {
-    public class ServiceMethodInfo
+    public partial class ServiceMethodInfo
     {
-        private static ConcurrentDictionary<string, ServiceMethodInfo> cache = new ConcurrentDictionary<string, ServiceMethodInfo>();
+        internal static readonly ConcurrentDictionary<string, ServiceMethodInfo> cache = new ConcurrentDictionary<string, ServiceMethodInfo>();
         private object[] arguments = Array.Empty<object>();
         private ParameterInfo[] parameters = Array.Empty<ParameterInfo>();
-        private string url { get; set; }
-        private Uri uri;
+        private string _url;
         private readonly HttpMethod HttpMethod;
         private HttpClient client { get; set; }
-        private readonly bool recycle;
         private readonly IDictionary<string, string> headersParams = new Dictionary<string, string>();
 
-        private ServiceMethodInfo(IEnumerable<Attribute> classAttributes, IEnumerable<Attribute> methodAttributes, HttpClient client, bool recycle)
+        private ServiceMethodInfo(IEnumerable<Attribute> classAttributes, IEnumerable<Attribute> methodAttributes, HttpClient client)
         {
             this.client = client;
-            this.recycle = recycle;
-            url = @"https://";
+            var hasBaseAddress = false;
+
+            if(this.client.BaseAddress != default && !string.IsNullOrWhiteSpace(this.client.BaseAddress.AbsoluteUri))
+            {
+                hasBaseAddress = true;
+                _url = this.client.BaseAddress.AbsoluteUri;
+            }
+            else
+            {
+                _url = "https://";
+            }
             foreach (var attr in classAttributes)
             {
-                if (attr is URL)
+                if (attr is URL u)
                 {
-                    var u = attr as URL;
-                    url = $@"{u.Path}";
+                    if (hasBaseAddress)
+                    {
+                        _url += $"{u.Path}";
+                    }
+                    else
+                    {
+                        _url = $@"{u.Path}";
+                    }
+
                     continue;
                 }
-                else if (attr is Header header)
+                else if (attr is HEADER header)
                 {
-                    if (header.HasAuthModel)
-                        headersParams.Add(header.Key, header.Authentication.ToString());
-                    else if (!string.IsNullOrWhiteSpace(header.Key) && !string.IsNullOrWhiteSpace(header.Value))
-                        headersParams.Add(header.Key, header.Value);
+                    object[] nullArg = null;
+                    ParseHeader(headersParams, ref header, 0, ref nullArg);
 
                     continue;
                 }
@@ -50,35 +58,37 @@ namespace TheProcessE.RestApiClient
 
             foreach (var attr in methodAttributes)
             {
-                if (attr is HttpMethodAttribute)
+                if (attr is HttpMethodAttribute u)
                 {
-                    var u = attr as HttpMethodAttribute;
-                    url += $@"/{u.Path}";
+                    _url += $"/{u.Path}";
 
                     if (HttpMethod != null)
                         throw new NotSupportedException("Service Methods can only have one Http Method Type!");
                     HttpMethod = u.HttpMethod;
                     continue;
                 }
-                else if (attr is Header header)
+                else if (attr is HEADER header)
                 {
-                    if (header.HasAuthModel)
-                        headersParams.Add(header.Key, header.Authentication.ToString());
-                    else if (!string.IsNullOrWhiteSpace(header.Key) && !string.IsNullOrWhiteSpace(header.Value))
-                        headersParams.Add(header.Key, header.Value);
+                    object[] nullArg = null;
+                    ParseHeader(headersParams, ref header, 0, ref nullArg);
                     continue;
                 }
             }
 
-            uri = new Uri(url);
-
         }
 
-        public static ServiceMethodInfo CreateOrAdd<Parent>(MethodInfo method, object[] arguments, HttpClient client, bool recycle) where Parent : class
+        public static ServiceMethodInfo CreateOrAdd<Parent>(MethodInfo method, object[] arguments, HttpClient client) where Parent : class
         {
-            var methodInfo = cache.GetOrAdd(method.Name, CreateNewMethodInfo<Parent>(method, client, recycle));
+            var methodInfo = cache.GetOrAdd(method.GetSignature(), CreateNewMethodInfo<Parent>(method, client));
             methodInfo.SetArguments(arguments);
             return methodInfo;
+        }
+
+        public static ServiceMethodInfo GetServiceMethodInfo(MethodInfo method)
+        {
+            var declaring = method.DeclaringType;
+            var assembly = declaring.AssemblyQualifiedName;
+            return cache.GetValueOrDefault(method.Name);
         }
 
         private ServiceMethodInfo SetArguments(object[] arguments)
@@ -87,159 +97,14 @@ namespace TheProcessE.RestApiClient
             return this;
         }
 
-        private static ServiceMethodInfo CreateNewMethodInfo<Parent>(MethodInfo method, HttpClient client, bool recycle)
+        private static ServiceMethodInfo CreateNewMethodInfo<Parent>(MethodInfo method, HttpClient client)
         {
-            var methodInfo = new ServiceMethodInfo(typeof(Parent).GetCustomAttributes(), method.GetCustomAttributes(), client, recycle);
+            var methodInfo = new ServiceMethodInfo(typeof(Parent).GetCustomAttributes(), method.GetCustomAttributes(), client);
             methodInfo.parameters = method.GetParameters();
             return methodInfo;
         }
 
-        private HttpContent Serialize<T>(T data)
-        {
-            var json = JsonConvert.SerializeObject(data);
-            var content = new StringContent(json);
-
-            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            return content;
-        }
-
-        private string SerializeObject(object data) => JsonConvert.SerializeObject(data);
-
-        private HttpContent MultiPartForm(Stream stream, string name)
-        {
-            var form = new MultipartFormDataContent();
-            //var memStream = new MemoryStream();
-            //stream.CopyTo(memStream);
-            var streamContent = new StreamContent(stream);
-            var fStream = stream as FileStream;
-            var fileName = fStream != null ? fStream.Name : "null";
-            streamContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
-            {
-                Name = name,
-                FileName = fileName
-            };
-            form.Add(streamContent, name);
-
-            return form;
-        }
-
-        private HttpContent MultiPartForm(List<Stream> streams, string[] names)
-        {
-            var form = new MultipartFormDataContent();
-            int i = 0;
-            foreach (var stream in streams)
-            {
-                string name = names != null ? i < names.Length ? names[i] : default : default;
-                //var memStream = new MemoryStream();
-                //stream.CopyTo(memStream);
-                var streamContent = new StreamContent(stream);
-                var fStream = stream as FileStream;
-                var fileName = fStream != null ? fStream.Name : "null";
-                if (name != null)
-                {
-                    streamContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
-                    {
-                        Name = name,
-                        FileName = fileName
-                    };
-                    form.Add(streamContent, name);
-                }
-
-                else form.Add(streamContent);
-            }
-
-            return form;
-        }
-
-        private HttpContent MultiPartForm(byte[] bytes, string name)
-        {
-            var form = new MultipartFormDataContent();
-            var bytesContent = new ByteArrayContent(bytes);
-            //bytesContent.Headers.ContentType = MediaTypeHeaderValue.Parse("multipart/form-data");
-            bytesContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
-            {
-                Name = name
-            };
-            form.Add(bytesContent, name);
-
-            return form;
-        }
-
-        private async Task<T> Deserialize<T>(string data)
-        {
-            return await Task.Factory.StartNew(() => JsonConvert.DeserializeObject<T>(data));
-        }
-
-        private bool DoesBodyObjectContainBytesOrStreams(object bodyObject, out HttpContent content)
-        {
-            content = default;
-
-            if (bodyObject == null)
-                return false;
-
-            var properties = bodyObject.GetType().GetProperties();
-
-            if (properties == null || properties == default)
-                return false;
-
-            var hasBytesOrStreams = false;
-            var form = new MultipartFormDataContent();
-
-            foreach (var property in properties)
-            {
-                var value = property.GetValue(bodyObject);
-
-                if(TryParse(value, out Stream stream))
-                {
-                    var streamContent = new StreamContent(stream);
-                    //streamContent.Headers.ContentType = MediaTypeHeaderValue.Parse("multipart/form-data");
-                    var fileStream = stream as FileStream;
-                    var name = fileStream != null ? fileStream.Name : property.Name;
-                    streamContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
-                    {
-                        Name = property.Name,
-                        FileName = name
-                    };
-                    form.Add(streamContent, property.Name);
-                    hasBytesOrStreams = true;
-                }
-                else if(value is byte[] bytes)
-                {
-                    var bytesContent = new ByteArrayContent(bytes);
-                    //bytesContent.Headers.ContentType = MediaTypeHeaderValue.Parse("multipart/form-data");
-                    bytesContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
-                    {
-                        Name = property.Name,
-                        FileName = property.Name
-                    };
-                    form.Add(bytesContent, property.Name);
-                    hasBytesOrStreams = true;
-                }else
-                {
-                    var stringContent = new StringContent(SerializeObject(value));
-                    //stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-                    stringContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
-                    {
-                        Name = property.Name
-                    };
-                    form.Add(stringContent, property.Name);
-                }
-            }
-
-            if (hasBytesOrStreams)
-                content = form;
-
-            return hasBytesOrStreams;
-        }
-
-        private bool TryParse<T, TParse>(T arg, out TParse parse) where TParse : class
-        {
-            parse = arg as TParse;
-
-            return parse != null;
-        }
-
-        public async Task<Response> Execute()
+        public RequestBuilder Execute()
         {
             // create a string content from object param
             HttpContent bodyContent = null;
@@ -256,48 +121,16 @@ namespace TheProcessE.RestApiClient
                             if (bodyContent != null)
                                 throw new ArgumentException("Only one body can be sent with the request!");
 
-                            var bodyArg = arguments[i];
-                            HttpContent content = default;
-                            if (TryParse(bodyArg, out Stream stream))
-                            {
-                                bodyContent = MultiPartForm(stream, body.Name);
-                            }else if(TryParse(bodyArg, out List<Stream> streams))
-                            {
-                                bodyContent = MultiPartForm(streams, new[] { body.Name });
-                            }
-                            else if (bodyArg is byte[] bytes)
-                            {
-                                bodyContent = MultiPartForm(bytes, body.Name);
-                            }
-                            else if (DoesBodyObjectContainBytesOrStreams(bodyArg, out content))
-                            {
-                                bodyContent = content;
-                            }
-                            else
-                            {
-                                bodyContent = Serialize(bodyArg);
-                            }
+                            HandleBodyContent(ref bodyContent, i, ref body);
                         }
-                        else if (attr is Header header)
+                        else if (attr is HEADER header)
                         {
-                            if (header.HasAuthModel)
-                                headersParams.Add(header.Key, header.Authentication.ToString());
-                            else if (!string.IsNullOrWhiteSpace(header.Value))
-                                headersParams.Add(header.Key, header.Value);
-                            else
-                            {
-                                var value = arguments[i] as string;
-                                if(!string.IsNullOrWhiteSpace(value))
-                                {
-                                    headersParams.Add(header.Key, value);
-                                }
-                            }
+                            ParseHeader(headersParams, ref header, i, ref arguments, true);
                             continue;
                         }
-                        else if (attr is Param param)
+                        else if (attr is PARAM param)
                         {
-                            string _param = arguments[i].ToString();
-                            uri = new Uri($@"{uri.AbsoluteUri}/{_param}");
+                            _url = ParseParams(_url, ref param, i, ref arguments);
                         }
                     }
                 }
@@ -309,44 +142,15 @@ namespace TheProcessE.RestApiClient
             }
             // add the headers to the string content
 
-            if (!recycle)
-                client = new HttpClient(RestService._handler);
-
+            client.DefaultRequestHeaders.Clear();
             foreach (var kp in headersParams)
             {
                 client.DefaultRequestHeaders.Add(kp.Key, kp.Value);
             }
 
-            Response response;
+            var uri = new Uri(_url);
+            return new RequestBuilder(HttpMethod, bodyContent, uri, client);
 
-            using var requestM = new HttpRequestMessage();
-
-            try
-            {
-                if (HttpMethod != HttpMethod.Get)
-                    requestM.Content = bodyContent;
-                requestM.RequestUri = uri;
-                requestM.Method = HttpMethod;
-
-                HttpResponseMessage responseM = await client.SendAsync(requestM);
-
-                if (responseM != null)
-                {
-                    var bytes = await responseM.Content.ReadAsByteArrayAsync();
-                    response = new Response(bytes, responseM);
-                }
-                else
-                    response = new Response(Array.Empty<byte>(), responseM);
-
-            }
-            catch (Exception e)
-            {
-                response = new Response(Encoding.UTF8.GetBytes(e.Message), default);
-            }
-
-            uri = new Uri(url);
-
-            return response;
         }
 
     }

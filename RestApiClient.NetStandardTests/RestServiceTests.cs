@@ -1,118 +1,71 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TheProcessE.RestApiClient;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using RestApiClient.NetStandardTests.RestApis;
-using System.Diagnostics;
-using System.IO;
+using System.Threading.Tasks;
 
 namespace TheProcessE.RestApiClient.Tests
 {
     [TestClass()]
     public class RestServiceTests
     {
+        private IExampleInterface service;
+        private TestContext testContext;
+
+        public TestContext TestContext
+        {
+            get { return testContext; }
+            set { testContext = value; }
+        }
+
+        [TestInitialize()]
+        public void Init()
+        {
+            service = RestService.GetService<IExampleInterface>();
+        }
+
         [TestMethod()]
-        public void GetServiceTest()
+        public async Task PostsTest()
         {
-            var service = RestService.GetService<IParteeService>();
-            Assert.IsNotNull(service);
+            var requestBuilder = service.Posts();
+            var posts = await requestBuilder.GetResponseSuppressExceptionAsync<Post[]>();
 
-            var response = service.V1().Result;
-            Debug.WriteLine(response.ResponseBody);
-            Console.WriteLine(response.ResponseBody);
-            Assert.IsFalse(response.IsConnectionError);
-            Assert.IsTrue(response.IsSuccess);
+            Assert.IsFalse(requestBuilder.IsConnectionError);
+            Assert.IsTrue(requestBuilder.IsSuccess);
+            Assert.IsNotNull(posts);
+            TestContext.WriteLine(posts[0].Title);
         }
 
-        [TestMethod]
-        public void LoginTest()
+        [TestMethod()]
+        public async Task PostTest()
         {
-            var service = RestService.GetService<IParteeService>();
-            Assert.IsNotNull(service);
+            var requestBuilder = service.Posts(1);
+            var post = await requestBuilder.GetResponseSuppressExceptionAsync<Post>();
 
-            var data = new
-            {
-                Password = "password",
-                Email = "theprocessdm@gmail.com"
-            };
-
-            var response = service.Login(data).Result;
-            Debug.WriteLine(response.ResponseBody);
-            Console.WriteLine(response.ResponseBody);
-            Assert.IsFalse(response.IsConnectionError);
-            Assert.IsTrue(response.IsSuccess);
+            Assert.IsFalse(requestBuilder.IsConnectionError);
+            Assert.IsTrue(requestBuilder.IsSuccess);
+            Assert.IsNotNull(post);
+            TestContext.WriteLine(post.Title);
         }
 
-        [TestMethod]
-        public void UploadProfileTest()
+        [TestMethod()]
+        public async Task PostAPostTest()
         {
-            var service = RestService.GetService<IParteeService>();
-            Assert.IsNotNull(service);
+            var requestBuilder = service.Posts();
+            var posts = await requestBuilder.GetResponseSuppressExceptionAsync<Post[]>();
 
-            var exists = File.Exists("C:\\Users\\The Process E\\Pictures\\file_example_JPG_1MB.jpg");
-            Assert.IsTrue(exists);
+            Assert.IsFalse(requestBuilder.IsConnectionError);
+            Assert.IsTrue(requestBuilder.IsSuccess);
+            Assert.IsNotNull(posts);
 
-            var stream = File.OpenRead("C:\\Users\\The Process E\\Pictures\\file_example_JPG_1MB.jpg");
-            Response response = service.UploadProfile(stream).Result;
-            Console.WriteLine(response.ResponseBody);
-            Assert.IsTrue(response.IsSuccess);
-            response.Dispose();
+            var post = posts[posts.Length - 1];
+            post.Id = posts.Length + 1;
+            var createBuilder = service.PostPosts(post);
+            var createResponse = await createBuilder.GetResponseSuppressExceptionAsync<Post>();
 
-            response = service.Login(new object()).Result;
-            Console.WriteLine(response.ResponseBody);
-            Assert.IsTrue(response.IsSuccess);
-        }
+            Assert.IsFalse(requestBuilder.IsConnectionError);
+            Assert.IsTrue(requestBuilder.IsSuccess);
+            Assert.AreEqual(post, createResponse);
 
-        [TestMethod]
-        public void GetProfileTest()
-        {
-            var service = RestService.GetService<IParteeService>();
-            Assert.IsNotNull(service);
-
-            var data = new
-            {
-                Password = "password",
-                Email = "theprocessdm@gmail.com"
-            };
-
-            var response = service.Login(data).Result;
-            Debug.WriteLine(response.ResponseBody);
-            Console.WriteLine(response.ResponseBody);
-            Assert.IsFalse(response.IsConnectionError);
-            Assert.IsTrue(response.IsSuccess);
-        }
-
-        [TestMethod]
-        public void PublishListing()
-        {
-            var service = RestService.GetService<IParteeService>();
-            Assert.IsNotNull(service);
-
-            var data = new
-            {
-                Password = "password",
-                Email = "theprocessdm@gmail.com"
-            };
-
-/*            var response = service.Login(data).Result;
-            Console.WriteLine(response.ResponseBody);
-            Assert.IsFalse(response.IsConnectionError);*/
-
-            var publishData = new
-            {
-                publish = true
-            };
-
-            var listingId = Guid.Parse("b85eec12-ae61-44e8-a7ac-ac2a1124cad7");
-
-            var response = service.PublishListing(listingId, publishData).Result;
-
-            Console.WriteLine("------------------------- Listing Publish result ----------------------------");
-            Console.WriteLine(response.ResponseBody);
-            Console.WriteLine(response.StatusCode);
-            Assert.IsFalse(response.IsConnectionError);
-
+            TestContext.WriteLine(createResponse.Title);
         }
     }
 }

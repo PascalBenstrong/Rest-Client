@@ -5,9 +5,9 @@
 
     <IsPackable>false</IsPackable>
 
-    <AssemblyVersion>2020.0330.0059.0</AssemblyVersion>
+    <AssemblyVersion>2020.1225.1857.0</AssemblyVersion>
 
-    <FileVersion>2020.0330.0059.0</FileVersion>
+    <FileVersion>2020.1225.1857.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,5 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\RestApiClient.NetStandard\RestApiClient.NetStandard.csproj" />
   </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties BuildVersion_StartDate="2000/1/1" BuildVersion_UseGlobalSettings="True" /></VisualStudio></ProjectExtensions>
 
 </Project>

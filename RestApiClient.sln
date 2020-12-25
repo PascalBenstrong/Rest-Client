@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestApiClient.NetCore", "Re
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RestApiClient.NetStandard", "RestApiClient.NetStandard\RestApiClient.NetStandard.csproj", "{39E94F52-F1AC-48F8-9B66-083D7A36E686}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestApiClient.NetStandardTests", "RestApiClient.NetStandardTests\RestApiClient.NetStandardTests.csproj", "{B3125311-B910-4543-B22F-894D880718B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RestApiClient.NetStandardTests", "RestApiClient.NetStandardTests\RestApiClient.NetStandardTests.csproj", "{B3125311-B910-4543-B22F-894D880718B6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +38,8 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
+		BuildVersion_UseGlobalSettings = True
+		BuildVersion_StartDate = 2000/1/1
 		SolutionGuid = {05AD2900-851E-4A61-A1F5-94CD248510ED}
 	EndGlobalSection
 EndGlobal

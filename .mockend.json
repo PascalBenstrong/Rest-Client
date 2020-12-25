@@ -1,0 +1,19 @@
+{
+  "Post": {
+    "id": "int",
+    "userId": "int",
+    "title": "string",
+    "views": "int",
+    "published": "boolean",
+    "createdAt": "date",
+    "comments": "Comment[]"
+  },
+  "todos": {
+    "id": "int",
+    "userId": "int",
+    "title": "string",
+    "description": "string",
+    "completed": "date",
+    "createdAt": "date"
+  }
+}

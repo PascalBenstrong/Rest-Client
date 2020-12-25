@@ -4,8 +4,8 @@ using System.Net.Http.Headers;
 
 namespace TheProcessE.RestApiClient
 {
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Interface)]
-    public partial class Header : Attribute
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Interface | AttributeTargets.Parameter)]
+    public partial class HEADER : Attribute
     {
         public string Key { get; }
         public string Value { get; }
@@ -16,7 +16,7 @@ namespace TheProcessE.RestApiClient
 
         public AuthenticationHeaderValue Authentication => new AuthenticationHeaderValue(AuthModel.Scheme, AuthModel.Token);
 
-        public Header(string key, string value)
+        public HEADER(string key, string value)
         {
             if (string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(value))
                 throw new ArgumentNullException($"{nameof(key)} or {nameof(value)} are null or empty on Header Attribute!");
@@ -25,7 +25,7 @@ namespace TheProcessE.RestApiClient
             Value = value;
         }
 
-        public Header(Type AuthModelType)
+        public HEADER(Type AuthModelType)
         {
             if (AuthModelType == null)
                 throw new ArgumentNullException(nameof(AuthModelType));
@@ -49,9 +49,16 @@ namespace TheProcessE.RestApiClient
             authModel = ((IAuthModel)Instance).Create() ;
         }
 
+        public HEADER(string key)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentException($"{nameof(key)} is null or empty on Header Attribute!");
+
+            Key = key;
+        }
     }
 
-    public partial class Header : Attribute
+    public partial class HEADER
     {
         private Type _authModelType { get; }
 
