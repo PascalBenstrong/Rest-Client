@@ -11,9 +11,9 @@
     <Company>The Process Enterprise</Company>
     <Copyright>Copyright © The Process E 2020</Copyright>
     <RepositoryUrl>https://github.com/PascalBenstrong/Rest-Client.git</RepositoryUrl>
-    <AssemblyVersion>2020.1225.1857.0</AssemblyVersion>
-    <FileVersion>2020.1225.1857.0</FileVersion>
-    <Version>2020.1225.0-alpha-07</Version>
+    <AssemblyVersion>2020.1225.2002.0</AssemblyVersion>
+    <FileVersion>2020.1225.2002.0</FileVersion>
+    <Version>2020.1225.0-alpha-12</Version>
     <PackageTags>C# httpclient httpclient HTTPCLIENT httpclient HTTPClient http rest client</PackageTags>
     <PackageReleaseNotes>Ported the library to .NET Standard 2.1</PackageReleaseNotes>
     <Configurations>Debug;Release;Preview</Configurations>

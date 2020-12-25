@@ -23,21 +23,21 @@ namespace TheProcessE.RestApiClient.Tests
         }
 
         [TestMethod()]
-        public async Task PostsTest()
+        public async Task GetPostsTest()
         {
-            var requestBuilder = service.Posts();
-            var posts = await requestBuilder.GetResponseSuppressExceptionAsync<Post[]>();
+            var requestBuilder = service.GetPosts();
+            var posts = await requestBuilder.GetResponseSuppressExceptionAsync<Post>();
 
             Assert.IsFalse(requestBuilder.IsConnectionError);
             Assert.IsTrue(requestBuilder.IsSuccess);
             Assert.IsNotNull(posts);
-            TestContext.WriteLine(posts[0].Title);
+            TestContext.WriteLine(posts.Title);
         }
 
         [TestMethod()]
-        public async Task PostTest()
+        public async Task GetPostTest()
         {
-            var requestBuilder = service.Posts(1);
+            var requestBuilder = service.GetPosts(1);
             var post = await requestBuilder.GetResponseSuppressExceptionAsync<Post>();
 
             Assert.IsFalse(requestBuilder.IsConnectionError);
@@ -49,23 +49,35 @@ namespace TheProcessE.RestApiClient.Tests
         [TestMethod()]
         public async Task PostAPostTest()
         {
-            var requestBuilder = service.Posts();
-            var posts = await requestBuilder.GetResponseSuppressExceptionAsync<Post[]>();
+            var post = new Post
+            {
+                Body = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                UserId = 1,
+                Title = "John Doe"
 
-            Assert.IsFalse(requestBuilder.IsConnectionError);
-            Assert.IsTrue(requestBuilder.IsSuccess);
-            Assert.IsNotNull(posts);
+            };
 
-            var post = posts[posts.Length - 1];
-            post.Id = posts.Length + 1;
             var createBuilder = service.PostPosts(post);
             var createResponse = await createBuilder.GetResponseSuppressExceptionAsync<Post>();
 
-            Assert.IsFalse(requestBuilder.IsConnectionError);
-            Assert.IsTrue(requestBuilder.IsSuccess);
+            post.Id = createResponse.Id;
+            Assert.IsFalse(createBuilder.IsConnectionError);
+            Assert.IsTrue(createBuilder.IsSuccess);
             Assert.AreEqual(post, createResponse);
 
             TestContext.WriteLine(createResponse.Title);
+        }
+
+        [TestMethod()]
+        public async Task GetPostByIdTest()
+        {
+            var requestBuilder = service.GetPostById(1);
+            var post = await requestBuilder.GetResponseSuppressExceptionAsync<Post[]>();
+
+            Assert.IsFalse(requestBuilder.IsConnectionError);
+            Assert.IsTrue(requestBuilder.IsSuccess);
+            Assert.IsNotNull(post);
+            TestContext.WriteLine(post[0].Title);
         }
     }
 }

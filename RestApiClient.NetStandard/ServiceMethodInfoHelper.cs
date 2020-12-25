@@ -179,7 +179,7 @@ namespace TheProcessE.RestApiClient
                 headersParams.Add(header.Key, header.Value);
             else if(isMethodHeader)
             {
-                var value = arguments[index] as string;
+                var value = arguments[index]?.ToString();
                 if (!string.IsNullOrWhiteSpace(value))
                 {
                     headersParams.Add(header.Key, value);

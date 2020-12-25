@@ -2,19 +2,17 @@
 
 namespace RestApiClient.NetStandardTests.RestApis
 {
-    [URL("http://localhost:2999")]
+    [URL("https://jsonplaceholder.typicode.com")]
     public interface IExampleInterface
     {
         [GET("posts")]
-        RequestBuilder Posts([PARAM] int? id = null);
+        RequestBuilder GetPosts([PARAM] int? id = null);
+
+        [GET("posts")]
+        RequestBuilder GetPostById([QUERY("postId")] int id);
 
         [POST("posts")]
         RequestBuilder PostPosts<TBody>([BODY] TBody post);
 
-        [GET("todos")]
-        RequestBuilder Todos();
-
-        [GET("users")]
-        RequestBuilder Users();
     }
 }

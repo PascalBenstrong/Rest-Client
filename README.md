@@ -39,19 +39,18 @@ A simple HttpClient for making http requests
 _Example of Service Interface_
 
 ```C#
+  [URL("https://jsonplaceholder.typicode.com")]
   public interface IExampleInterface
   {
       [GET("posts")]
-      RequestBuilder Posts([PARAM] int? id = null);
+      RequestBuilder GetPosts([PARAM] int? id = null);
+
+      [GET("posts")]
+      RequestBuilder GetPostById([QUERY("postId")] int id);
 
       [POST("posts")]
       RequestBuilder PostPosts<TBody>([BODY] TBody post);
 
-      [GET("todos")]
-      RequestBuilder Todos();
-
-      [GET("users")]
-      RequestBuilder Users();
   }
 ```
 
@@ -80,10 +79,10 @@ _Getting the posts_
 ```C#
 // if not using async mark the method return type as Response
 // or use var posts = requestBuilder.GetResponseAsync<Post[]>().Result;
-var requestBuilder = service.Posts();
-var posts = await requestBuilder.GetResponseAsync<Post[]>();
+var requestBuilder = service.GetPosts(1);
+var posts = await requestBuilder.GetResponseAsync<Post>();
 
-Console.WriteLine($"First Post: {posts[0].Title}");
+Console.WriteLine($"First Post: {posts.Title}");
 
 ```
 

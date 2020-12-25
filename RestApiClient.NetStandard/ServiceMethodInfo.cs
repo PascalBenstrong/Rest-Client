@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Reflection;
+using System.Web;
 
 namespace TheProcessE.RestApiClient
 {
@@ -14,6 +15,7 @@ namespace TheProcessE.RestApiClient
         private object[] arguments = Array.Empty<object>();
         private ParameterInfo[] parameters = Array.Empty<ParameterInfo>();
         private string _url;
+        private string _query = string.Empty;
         private readonly HttpMethod HttpMethod;
         private HttpClient client { get; set; }
         private readonly IDictionary<string, string> headersParams = new Dictionary<string, string>();
@@ -131,9 +133,20 @@ namespace TheProcessE.RestApiClient
                         else if (attr is PARAM param)
                         {
                             _url = ParseParams(_url, ref param, i, ref arguments);
+                        }else if(attr is QUERY query)
+                        {
+                            var q = arguments[i]?.ToString();
+                            _query = _query + $"{query.Name}={q}&";
                         }
                     }
                 }
+
+            }
+
+            if(_query.Length > 2)
+            {
+                _query = _query.Substring(0, _query.Length - 1);
+                _url = $"{_url}?{_query}";
             }
 
             if(bodyContent == default)
