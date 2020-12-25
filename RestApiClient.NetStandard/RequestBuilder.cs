@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace TheProcessE.RestApiClient
 {
@@ -37,8 +37,8 @@ namespace TheProcessE.RestApiClient
             if (IsConnectionError)
                 return default;
 
-            var contentString = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<TResult>(contentString);
+            var contentStream = await response.Content.ReadAsStreamAsync();
+            var result = await JsonSerializer.DeserializeAsync<TResult>(contentStream);
             return result;
         }
 
@@ -51,8 +51,8 @@ namespace TheProcessE.RestApiClient
 
             try
             {
-                var contentString = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<TResult>(contentString);
+                var contentStream = await response.Content.ReadAsStreamAsync();
+                var result = await JsonSerializer.DeserializeAsync<TResult>(contentStream);
                 return result;
             }
             catch(Exception e)

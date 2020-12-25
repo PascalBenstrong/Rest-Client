@@ -7,7 +7,7 @@ namespace TheProcessE.RestApiClient.Tests
     [TestClass()]
     public class RestServiceTests
     {
-        private IExampleInterface service;
+        private IExampleInterface _service;
         private TestContext testContext;
 
         public TestContext TestContext
@@ -19,26 +19,26 @@ namespace TheProcessE.RestApiClient.Tests
         [TestInitialize()]
         public void Init()
         {
-            service = RestService.GetService<IExampleInterface>();
+            _service = RestService.GetService<IExampleInterface>();
         }
 
         [TestMethod()]
         public async Task GetPostsTest()
         {
-            var requestBuilder = service.GetPosts();
-            var posts = await requestBuilder.GetResponseSuppressExceptionAsync<Post>();
+            var requestBuilder = _service.GetPosts();
+            var posts = await requestBuilder.GetResponseAsync<Post[]>();
 
             Assert.IsFalse(requestBuilder.IsConnectionError);
             Assert.IsTrue(requestBuilder.IsSuccess);
             Assert.IsNotNull(posts);
-            TestContext.WriteLine(posts.Title);
+            TestContext.WriteLine(posts[0].Title);
         }
 
         [TestMethod()]
         public async Task GetPostTest()
         {
-            var requestBuilder = service.GetPosts(1);
-            var post = await requestBuilder.GetResponseSuppressExceptionAsync<Post>();
+            var requestBuilder = _service.GetPosts(1);
+            var post = await requestBuilder.GetResponseAsync<Post>();
 
             Assert.IsFalse(requestBuilder.IsConnectionError);
             Assert.IsTrue(requestBuilder.IsSuccess);
@@ -57,8 +57,8 @@ namespace TheProcessE.RestApiClient.Tests
 
             };
 
-            var createBuilder = service.PostPosts(post);
-            var createResponse = await createBuilder.GetResponseSuppressExceptionAsync<Post>();
+            var createBuilder = _service.PostPosts(post);
+            var createResponse = await createBuilder.GetResponseAsync<Post>();
 
             post.Id = createResponse.Id;
             Assert.IsFalse(createBuilder.IsConnectionError);
@@ -71,8 +71,8 @@ namespace TheProcessE.RestApiClient.Tests
         [TestMethod()]
         public async Task GetPostByIdTest()
         {
-            var requestBuilder = service.GetPostById(1);
-            var post = await requestBuilder.GetResponseSuppressExceptionAsync<Post[]>();
+            var requestBuilder = _service.GetPostById(1);
+            var post = await requestBuilder.GetResponseAsync<Post[]>();
 
             Assert.IsFalse(requestBuilder.IsConnectionError);
             Assert.IsTrue(requestBuilder.IsSuccess);

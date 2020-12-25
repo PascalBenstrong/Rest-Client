@@ -2,10 +2,8 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Net.Http;
 using System.Reflection;
-using System.Web;
 
 namespace TheProcessE.RestApiClient
 {
@@ -14,7 +12,8 @@ namespace TheProcessE.RestApiClient
         internal static readonly ConcurrentDictionary<string, ServiceMethodInfo> cache = new ConcurrentDictionary<string, ServiceMethodInfo>();
         private object[] arguments = Array.Empty<object>();
         private ParameterInfo[] parameters = Array.Empty<ParameterInfo>();
-        private string _url;
+        private string _baseUrl;
+        private string _relativeUrl;
         private string _query = string.Empty;
         private readonly HttpMethod HttpMethod;
         private HttpClient client { get; set; }
@@ -28,11 +27,11 @@ namespace TheProcessE.RestApiClient
             if(this.client.BaseAddress != default && !string.IsNullOrWhiteSpace(this.client.BaseAddress.AbsoluteUri))
             {
                 hasBaseAddress = true;
-                _url = this.client.BaseAddress.AbsoluteUri;
+                _baseUrl = this.client.BaseAddress.AbsoluteUri;
             }
             else
             {
-                _url = "https://";
+                _baseUrl = "https://";
             }
             foreach (var attr in classAttributes)
             {
@@ -40,11 +39,11 @@ namespace TheProcessE.RestApiClient
                 {
                     if (hasBaseAddress)
                     {
-                        _url += $"{u.Path}";
+                        _baseUrl += $"{u.Path}";
                     }
                     else
                     {
-                        _url = $@"{u.Path}";
+                        _baseUrl = $"{u.Path}";
                     }
 
                     continue;
@@ -62,7 +61,7 @@ namespace TheProcessE.RestApiClient
             {
                 if (attr is HttpMethodAttribute u)
                 {
-                    _url += $"/{u.Path}";
+                    _baseUrl += _baseUrl[_baseUrl.Length-1] == '/' ? u.Path : $"/{u.Path}";
 
                     if (HttpMethod != null)
                         throw new NotSupportedException("Service Methods can only have one Http Method Type!");
@@ -108,6 +107,9 @@ namespace TheProcessE.RestApiClient
 
         public RequestBuilder Execute()
         {
+            // clear out any relative url and query
+            _relativeUrl = string.Empty;
+            _query = string.Empty;
             // create a string content from object param
             HttpContent bodyContent = null;
 
@@ -132,11 +134,11 @@ namespace TheProcessE.RestApiClient
                         }
                         else if (attr is PARAM param)
                         {
-                            _url = ParseParams(_url, ref param, i, ref arguments);
+                            _relativeUrl = ParseParams(_relativeUrl, ref param, i, ref arguments);
                         }else if(attr is QUERY query)
                         {
                             var q = arguments[i]?.ToString();
-                            _query = _query + $"{query.Name}={q}&";
+                            _query += $"{query.Name}={q}&";
                         }
                     }
                 }
@@ -146,7 +148,7 @@ namespace TheProcessE.RestApiClient
             if(_query.Length > 2)
             {
                 _query = _query.Substring(0, _query.Length - 1);
-                _url = $"{_url}?{_query}";
+                _relativeUrl += $"?{_query}";
             }
 
             if(bodyContent == default)
@@ -161,7 +163,7 @@ namespace TheProcessE.RestApiClient
                 client.DefaultRequestHeaders.Add(kp.Key, kp.Value);
             }
 
-            var uri = new Uri(_url);
+            var uri = new Uri(_baseUrl + _relativeUrl);
             return new RequestBuilder(HttpMethod, bodyContent, uri, client);
 
         }
