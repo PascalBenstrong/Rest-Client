@@ -21,7 +21,6 @@ jobs:
       working-directory: ./PascalBenstrong.Rest-Client
       run: |
         ls ./
-        dotnet test
     - name: Create Nuget Package
       working-directory: ./PascalBenstrong.Rest-Client
       run: |
