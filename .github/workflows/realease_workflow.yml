@@ -18,11 +18,11 @@ jobs:
       with:
         dotnet-version: 3.1.301
     - name: Run Tests
-      working-directory: ./PascalBenstrong.Rest-Client
+      working-directory: ./
       run: |
         ls ./
     - name: Create Nuget Package
-      working-directory: ./PascalBenstrong.Rest-Client
+      working-directory: ./
       run: |
        dotnet publish -c Release ./RestApiClient.NetStandard
        dotnet pack -c Release /p:Version=${{ github.event.release.tag_name }} /p:PackageReleaseNotes="See https://github.com/PascalBenstrong/Rest-Client/releases/tag/${{ github.event.release.tag_name }}" 
