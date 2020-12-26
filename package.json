@@ -1,0 +1,27 @@
+{
+  "name": "RestApiClient",
+  "version": "1.0.0",
+  "description": "A simple HttpClient for making http requests",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run preview",
+    "preview": "node index.js --build preview",
+    "prod-rc": "node index.js --build release-rc",
+    "prod": "node index.js --build release"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PascalBenstrong/Rest-Client.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PascalBenstrong/Rest-Client/issues"
+  },
+  "homepage": "https://github.com/PascalBenstrong/Rest-Client#readme",
+  "dependencies": {
+    "colors": "^1.4.0",
+    "yargs": "^16.2.0"
+  }
+}

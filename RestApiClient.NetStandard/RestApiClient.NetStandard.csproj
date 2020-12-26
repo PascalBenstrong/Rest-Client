@@ -11,12 +11,12 @@
     <Company>The Process Enterprise</Company>
     <Copyright>Copyright © The Process E 2020</Copyright>
     <RepositoryUrl>https://github.com/PascalBenstrong/Rest-Client.git</RepositoryUrl>
-    <AssemblyVersion>2020.1225.2223.0</AssemblyVersion>
-    <FileVersion>2020.1225.2223.0</FileVersion>
-    <Version>2020.1225.0-alpha-23</Version>
+    <AssemblyVersion>2020.1226.2.0</AssemblyVersion>
+    <FileVersion>2020.1226.2.0</FileVersion>
+    <Version>2020.1226.1</Version>
     <PackageTags>C# httpclient httpclient HTTPCLIENT httpclient HTTPClient http rest client</PackageTags>
     <PackageReleaseNotes>Ported the library to .NET Standard 2.1</PackageReleaseNotes>
-    <Configurations>Debug;Release;Preview</Configurations>
+    <Configurations>Debug;Release;Preview;Release-rc</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -46,9 +46,24 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <ShouldCreateLogs>True</ShouldCreateLogs>
     <AdvancedSettingsExpanded>True</AdvancedSettingsExpanded>
-    <UpdateAssemblyVersion>False</UpdateAssemblyVersion>
-    <UpdateAssemblyFileVersion>False</UpdateAssemblyFileVersion>
-    <UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
+    <UpdateAssemblyVersion>True</UpdateAssemblyVersion>
+    <UpdateAssemblyFileVersion>True</UpdateAssemblyFileVersion>
+    <UpdateAssemblyInfoVersion>True</UpdateAssemblyInfoVersion>
+    <UpdatePackageVersion>True</UpdatePackageVersion>
+    <AssemblyInfoVersionType>SettingsVersion</AssemblyInfoVersionType>
+    <InheritWinAppVersionFrom>None</InheritWinAppVersionFrom>
+    <PackageVersionSettings>AssemblyVersion.IncrementWithAutoReset.None</PackageVersionSettings>
+    <AssemblyFileVersionSettings>YearStamp.IncrementOnDemand.IncrementWithResetOnIncrease.None</AssemblyFileVersionSettings>
+    <AssemblyInfoVersionSettings>None.None.None.None</AssemblyInfoVersionSettings>
+    <AssemblyVersionSettings>YearStamp.IncrementOnDemand.IncrementWithResetOnIncrease.None</AssemblyVersionSettings>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-rc|AnyCPU'">
+    <ShouldCreateLogs>True</ShouldCreateLogs>
+    <AdvancedSettingsExpanded>True</AdvancedSettingsExpanded>
+    <UpdateAssemblyVersion>True</UpdateAssemblyVersion>
+    <UpdateAssemblyFileVersion>True</UpdateAssemblyFileVersion>
+    <UpdateAssemblyInfoVersion>True</UpdateAssemblyInfoVersion>
     <UpdatePackageVersion>True</UpdatePackageVersion>
     <AssemblyInfoVersionType>SettingsVersion</AssemblyInfoVersionType>
     <InheritWinAppVersionFrom>None</InheritWinAppVersionFrom>
@@ -57,7 +72,6 @@
 
   <ItemGroup>
     <PackageReference Include="System.Net.Http.Json" Version="5.0.0" />
-    <!--PackageReference Include="System.Reflection.DispatchProxy" Version="4.7.0" /-->
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties BuildVersion_StartDate="2000/1/1" BuildVersion_UseGlobalSettings="True" /></VisualStudio></ProjectExtensions>
