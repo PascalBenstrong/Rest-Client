@@ -19,7 +19,9 @@ jobs:
         dotnet-version: 3.1.301
     - name: Run Tests
       working-directory: ./PascalBenstrong.Rest-Client
-      run: dotnet test
+      run: |
+        ls ./
+        dotnet test
     - name: Create Nuget Package
       working-directory: ./PascalBenstrong.Rest-Client
       run: |
