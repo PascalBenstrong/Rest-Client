@@ -46,7 +46,7 @@ buildProcess.on("close", (code) => {
     }
 
     console.log(colors.cyan(stdout));
-    console.log(colors.blue("tagged commit\n"), colors.blue(`v${version}`));
+    console.log(colors.blue("tagged commit\n"), colors.blue(`${version}`));
   });
 });
 
