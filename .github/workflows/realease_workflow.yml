@@ -25,7 +25,7 @@ jobs:
        dotnet pack -c Release /p:Version=${{ github.event.release.tag_name }} /p:PackageReleaseNotes="See https://github.com/PascalBenstrong/Rest-Client/releases/tag/${{ github.event.release.tag_name }}" 
       
     - name: Archive Nuget Package
-      uses: actions/upload-artifacts@v1
+      uses: actions/upload-artifact@v1
       with:
         name: TheProcessE.RestClient.${{ github.event.release.tag_name }}.nupkg 
         path:  .\RestApiClient.NetStandard\bin\TheProcessE.RestClient.${{ github.event.release.tag_name }}.nupkg
