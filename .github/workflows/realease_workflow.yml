@@ -1,0 +1,34 @@
+name: Release to Nuget
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.301
+    - name: Run Tests
+      working-directory: ./
+      run: |
+        ls ./
+    - name: Create Nuget Package
+      working-directory: ./
+      run: |
+       dotnet publish -c Release ./RestApiClient.NetStandard
+       dotnet pack -c Release /p:Version=${{ github.event.release.tag_name }} /p:PackageReleaseNotes="See https://github.com/PascalBenstrong/Rest-Client/releases/tag/${{ github.event.release.tag_name }}" 
+      
+    - name: Archive Nuget Package
+      uses: actions/upload-artifact@v1
+      with:
+        name: TheProcessE.RestClient.${{ github.event.release.tag_name }}.nupkg 
+        path:  .\RestApiClient.NetStandard\bin\TheProcessE.RestClient.${{ github.event.release.tag_name }}.nupkg
