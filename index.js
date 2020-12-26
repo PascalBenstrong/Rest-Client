@@ -35,7 +35,7 @@ buildProcess.on("close", (code) => {
   console.log(colors.blue("build successful\n"));
   // git tag the build with version
   const version = getVersion();
-  let cmd = `git tag v${version} && git tag --list`;
+  let cmd = `git tag ${version} && git tag --list`;
 
   console.log(cmd);
 
