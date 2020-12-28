@@ -44,7 +44,7 @@ jobs:
         run: dotnet nuget push ${{ env.PACKAGE_OUTPUT_DIRECTORY }}/*.nupkg --skip-duplicate -k ${{ env.NUGET_AUTH_TOKEN }} -s ${{ env.NUGET_SOURCE_URL }}
 
       - name: Archive Nuget Package
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
           name: ${{ env.ARTIFACT_NAME}}.${{ env.TAG_NAME }}.nupkg
-          path: ${{ env.PACKAGE_OUTPUT_DIRECTORY }}/*.nupkg
+          path: '${{ env.PACKAGE_OUTPUT_DIRECTORY }}/*.nupkg'
