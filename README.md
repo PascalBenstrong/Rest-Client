@@ -8,11 +8,14 @@ A simple HttpClient for making http requests
 - POST
 - PUT
 - DELETE
+- PATCH
 
 **Supported HTTP request Data**
 
 - BODY
 - HEADER/HEADERS
+- QUERY
+- PARAM for path parameters
 
 ## How To Use
 
@@ -20,11 +23,11 @@ A simple HttpClient for making http requests
 
 ### 2 - Add a URL attribute to your interface with the base-url
 
-### 3 - Mark the methods with correct HttpMethod using (GET, POST, PUT, DELETE)
+### 3 - Mark the methods with correct HttpMethod using (GET, POST, PUT, DELETE, PATCH)
 
-### 4 - Mark the parameters as Header or BODY using the Header or BODY attribute
+### 4 - Mark the parameters as Header or Body using the HEADER or BODY attribute
 
-### 5 - Mark the return type of your method as a Task<Response> or Response
+### 5 - Mark the return type of your method as a RequestBuilder
 
 ### 6 - Call the GetService method of the RestService class with your type as parameter
 
@@ -32,7 +35,7 @@ A simple HttpClient for making http requests
 
 ## Target FrameWork
 
-.NETFramework4.7.2
+.NET Standard 2.1
 
 ## Test Example getting the posts from [json placeholder](https://jsonplaceholder.typicode.com/posts)
 

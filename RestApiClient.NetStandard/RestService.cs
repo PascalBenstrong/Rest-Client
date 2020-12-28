@@ -45,17 +45,16 @@ namespace TheProcessE.RestApiClient
             if (!IsServiceInterface(typeof(T)))
                 throw new ArgumentException("The generic type must be an interface and must not extend other interfaces");
 
-            if (client == default)
-            {
-                client = new HttpClient();
-            }
-
             var typeName = typeof(T).AssemblyQualifiedName;
             return cachedRestClients.GetOrAdd(typeName, CreateNewService<T>(client));
         }
 
         private static ServiceInfo CreateNewService<T>(HttpClient client) where T: class
         {
+            if (client == default)
+            {
+                client = new HttpClient();
+            }
             return new ServiceInfo<T>(client);
         }
 

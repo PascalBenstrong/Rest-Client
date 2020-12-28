@@ -85,13 +85,6 @@ namespace TheProcessE.RestApiClient
             return methodInfo;
         }
 
-        public static ServiceMethodInfo GetServiceMethodInfo(MethodInfo method)
-        {
-            var declaring = method.DeclaringType;
-            var assembly = declaring.AssemblyQualifiedName;
-            return cache.GetValueOrDefault(method.Name);
-        }
-
         private ServiceMethodInfo SetArguments(object[] arguments)
         {
             this.arguments = arguments;
