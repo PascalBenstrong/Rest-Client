@@ -32,7 +32,7 @@ jobs:
         run: dotnet test
 
       - name: Build Project
-          run: dotnet build ${{env.PROJECT_PATH}} -c Release --no-restore
+        run: dotnet build ${{env.PROJECT_PATH}} -c Release --no-restore
 
       - name: Get Version
           id: version
@@ -48,4 +48,4 @@ jobs:
           path: ${{env.PACKAGE_OUTPUT_DIRECTORY}}\*.nupkg
 
       - name: Push Package
-          run: dotnet nuget push ${{env.PACKAGE_OUTPUT_DIRECTORY}}\*.nupkg -k ${{NUGET_AUTH_TOKEN}} -s ${{NUGET_SOURCE_URL}}
+        run: dotnet nuget push ${{env.PACKAGE_OUTPUT_DIRECTORY}}\*.nupkg -k ${{NUGET_AUTH_TOKEN}} -s ${{NUGET_SOURCE_URL}}
