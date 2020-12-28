@@ -3,7 +3,7 @@ name: Release to Nuget
 on:
   push:
     tags:
-    - 'v*'
+      - "v*"
   workflow_dispatch:
     branches: [master]
 
@@ -13,7 +13,7 @@ env:
   ARTIFACT_NAME: TheProcessE.RestClient
   PACKAGE_RELEASE_NOTES_URL: https://github.com/PascalBenstrong/Rest-Client/releases/tag/
   PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}\output
-  NUGET_SOURCE_URL: 'https://api.nuget.org/v3/index.json'
+  NUGET_SOURCE_URL: "https://api.nuget.org/v3/index.json"
   NUGET_AUTH_TOKEN: ${{secrets.NUGET_AUTH_TOKEN}}
 
 jobs:
@@ -35,8 +35,8 @@ jobs:
         run: dotnet build ${{env.PROJECT_PATH}} -c Release --no-restore
 
       - name: Get Version
-          id: version
-          uses: battila7/get-version-action@v2
+        id: version
+        uses: battila7/get-version-action@v2
 
       - name: Create Nuget Package
         run: dotnet pack ${{env.PROJECT_PATH}} -c Release --no-restore --include-symbols --output ${{env.PACKAGE_OUTPUT_DIRECTORY}} -p:PackageVersion=${{ steps.version.outputs.version-without-v }} -p:PackageReleaseNotes="See ${{env.PACKAGE_RELEASE_NOTES_URL}}${{ env.TAG_NAME }}"
