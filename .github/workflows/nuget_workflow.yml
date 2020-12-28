@@ -12,8 +12,8 @@ env:
   PROJECT_PATH: ./RestApiClient.NetStandard
   ARTIFACT_NAME: TheProcessE.RestClient
   PACKAGE_RELEASE_NOTES_URL: https://github.com/PascalBenstrong/Rest-Client/releases/tag/
-  PACKAGE_OUTPUT_DIRECTORY: ${{github.workspace}}\output
-  NUGET_SOURCE_URL: ''https://api.nuget.org/v3/index.json''
+  PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}\output
+  NUGET_SOURCE_URL: 'https://api.nuget.org/v3/index.json'
   NUGET_AUTH_TOKEN: ${{secrets.NUGET_AUTH_TOKEN}}
 
 jobs:
