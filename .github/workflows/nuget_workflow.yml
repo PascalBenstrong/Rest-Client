@@ -41,7 +41,7 @@ jobs:
         uses: battila7/get-version-action@v2
 
       - name: Create Nuget Package
-        run: dotnet pack ${{ env.PROJECT_PATH }} -c Release --no-restore --include-symbols --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }} -p:PackageVersion=${{ steps.version.outputs.version-without-v }} -p:PackageReleaseNotes="See ${{ env.PACKAGE_RELEASE_NOTES_URL }}${{ env.TAG_NAME }}" -p:RepositoryUrl="${{ env.GITHUB_REPO_URL }}"
+        run: dotnet pack ${{ env.PROJECT_PATH }} -c Release --no-restore --include-symbols --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }} -p:PackageVersion=${{ steps.version.outputs.version-without-v }} -p:PackageReleaseNotes="See ${{ env.PACKAGE_RELEASE_NOTES_URL }}${{ steps.version.outputs.version }}" -p:RepositoryUrl="${{ env.GITHUB_REPO_URL }}"
 
       - name: Push Package to Nuget
         run: dotnet nuget push ${{ env.PACKAGE_OUTPUT_DIRECTORY }}/*.nupkg --skip-duplicate -k ${{ env.NUGET_AUTH_TOKEN }} -s ${{ env.NUGET_SOURCE_URL }}
