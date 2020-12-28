@@ -5,7 +5,7 @@ on:
     tags:
       - "v*"
   workflow_dispatch:
-    branches: [master]
+    branches: [ master, nuget ]
 
 env:
   TAG_NAME: ${{ github.event.release.tag_name }}
