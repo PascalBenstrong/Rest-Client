@@ -15,6 +15,8 @@ env:
   PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}/output
   NUGET_SOURCE_URL: https://api.nuget.org/v3/index.json
   NUGET_AUTH_TOKEN: ${{ secrets.NUGET_AUTH_TOKEN }}
+  GITHUB_REPO_URL: https://github.com/$GITHUB_REPOSITORY 
+  GITHUB_SOURCE_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json 
 
 jobs:
   build:
@@ -39,10 +41,13 @@ jobs:
         uses: battila7/get-version-action@v2
 
       - name: Create Nuget Package
-        run: dotnet pack ${{ env.PROJECT_PATH }} -c Release --no-restore --include-symbols --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }} -p:PackageVersion=${{ steps.version.outputs.version-without-v }} -p:PackageReleaseNotes="See ${{ env.PACKAGE_RELEASE_NOTES_URL }}${{ env.TAG_NAME }}"
+        run: dotnet pack ${{ env.PROJECT_PATH }} -c Release --no-restore --include-symbols --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }} -p:PackageVersion=${{ steps.version.outputs.version-without-v }} -p:PackageReleaseNotes="See ${{ env.PACKAGE_RELEASE_NOTES_URL }}${{ env.TAG_NAME }}" -p:RepositoryUrl="${{ env.GITHUB_REPO_URL }}"
 
-      - name: Push Package
+      - name: Push Package to Nuget
         run: dotnet nuget push ${{ env.PACKAGE_OUTPUT_DIRECTORY }}/*.nupkg --skip-duplicate -k ${{ env.NUGET_AUTH_TOKEN }} -s ${{ env.NUGET_SOURCE_URL }}
+        
+      - name: Push Package to GitHub
+        run: dotnet nuget push ${{ env.PACKAGE_OUTPUT_DIRECTORY }}/*.nupkg --skip-duplicate -k ${{ secrets.GITHUB_TOKEN }} -s ${{ env.GITHUB_SOURCE_URL }}
 
       - name: Archive Nuget Package
         uses: actions/upload-artifact@v2
