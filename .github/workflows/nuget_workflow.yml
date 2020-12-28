@@ -41,11 +41,11 @@ jobs:
       - name: Create Nuget Package
         run: dotnet pack ${{env.PROJECT_PATH}} -c Release --no-restore --include-symbols --output ${{env.PACKAGE_OUTPUT_DIRECTORY}} -p:PackageVersion=${{ steps.version.outputs.version-without-v }} -p:PackageReleaseNotes="See ${{env.PACKAGE_RELEASE_NOTES_URL}}${{ env.TAG_NAME }}"
 
+      - name: Push Package
+        run: dotnet nuget push ${{env.PACKAGE_OUTPUT_DIRECTORY}}\*.nupkg -k ${{env.NUGET_AUTH_TOKEN}} -s ${{env.NUGET_SOURCE_URL}}
+
       - name: Archive Nuget Package
         uses: actions/upload-artifact@v1
         with:
           name: ${{env.ARTIFACT_NAME}}.${{ env.TAG_NAME }}.nupkg
           path: ${{env.PACKAGE_OUTPUT_DIRECTORY}}\*.nupkg
-
-      - name: Push Package
-        run: dotnet nuget push ${{env.PACKAGE_OUTPUT_DIRECTORY}}\*.nupkg -k ${{env.NUGET_AUTH_TOKEN}} -s ${{env.NUGET_SOURCE_URL}}
