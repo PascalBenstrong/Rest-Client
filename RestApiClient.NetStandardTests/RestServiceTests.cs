@@ -35,6 +35,18 @@ namespace TheProcessE.RestApiClient.Tests
         }
 
         [TestMethod()]
+        public async Task GetPostsAsStringTest()
+        {
+            var requestBuilder = _service.GetPosts();
+            var posts = await requestBuilder.GetResponseAsStringAsync();
+
+            Assert.IsFalse(requestBuilder.IsConnectionError);
+            Assert.IsTrue(requestBuilder.IsSuccess);
+            Assert.IsFalse(string.IsNullOrWhiteSpace(posts));
+            TestContext.WriteLine(posts);
+        }
+
+        [TestMethod()]
         public async Task GetPostTest()
         {
             var requestBuilder = _service.GetPosts(1);

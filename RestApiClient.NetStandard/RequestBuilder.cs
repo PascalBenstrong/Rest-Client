@@ -30,6 +30,17 @@ namespace TheProcessE.RestApiClient
             Client = client;
         }
 
+        public async ValueTask<string> GetResponseAsStringAsync()
+        {
+            var response = await SendAsync();
+
+            if (IsConnectionError)
+                return default;
+
+            var result = await response.Content.ReadAsStringAsync();
+            return result;
+        }
+
         public async ValueTask<TResult> GetResponseAsync<TResult>()
         {
             var response = await SendAsync();
