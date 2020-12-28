@@ -52,7 +52,7 @@ jobs:
           
       - name: Zip Archive
         run: |
-          zip --junk-paths ${{ env.ARTIFACT_NAME }}.${{ steps.version.outputs.version-without-v }}.zip '${{ env.PACKAGE_OUTPUT_DIRECTORY }}/*.nupkg'
+          zip --junk-paths ${{ env.ARTIFACT_NAME }}.${{ steps.version.outputs.version-without-v }}.zip ${{ env.PACKAGE_OUTPUT_DIRECTORY }}/*.nupkg
           
       - name: Create Release
         id: create_release
