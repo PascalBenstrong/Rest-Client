@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text.Json;
+using System.Threading;
 
 namespace TheProcessE.RestApiClient
 {
@@ -30,9 +31,9 @@ namespace TheProcessE.RestApiClient
             Client = client;
         }
 
-        public async ValueTask<string> GetResponseAsStringAsync()
+        public async ValueTask<string> GetResponseAsStringAsync(CancellationToken cancellationToken = default)
         {
-            var response = await SendAsync();
+            var response = await SendAsync(cancellationToken);
 
             if (IsConnectionError)
                 return default;
@@ -41,29 +42,32 @@ namespace TheProcessE.RestApiClient
             return result;
         }
 
-        public async ValueTask<TResult> GetResponseAsync<TResult>()
+        public async ValueTask<TResult> GetResponseAsync<TResult>(JsonSerializerOptions? options = default, CancellationToken cancellationToken = default)
         {
-            var response = await SendAsync();
+            var response = await SendAsync(cancellationToken);
 
             if (IsConnectionError)
                 return default;
 
+            if (options == default)
+            {
+                options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+            }
+
             var contentStream = await response.Content.ReadAsStreamAsync();
-            var result = await JsonSerializer.DeserializeAsync<TResult>(contentStream);
+            var result = await JsonSerializer.DeserializeAsync<TResult>(contentStream, options, cancellationToken);
             return result;
         }
 
-        public async ValueTask<TResult> GetResponseSuppressExceptionAsync<TResult>()
+        public async ValueTask<TResult> GetResponseSuppressExceptionAsync<TResult>(JsonSerializerOptions? options = default, CancellationToken cancellationToken = default)
         {
-            var response = await SendSuppressExceptionAsync();
-
-            if (IsConnectionError)
-                return default;
 
             try
             {
-                var contentStream = await response.Content.ReadAsStreamAsync();
-                var result = await JsonSerializer.DeserializeAsync<TResult>(contentStream);
+                var result = await GetResponseAsync<TResult>(options,cancellationToken);
                 return result;
             }
             catch(Exception e)
@@ -72,7 +76,8 @@ namespace TheProcessE.RestApiClient
                 return default;
             }
         }
-        public async ValueTask<HttpResponseMessage> SendAsync()
+
+        public async ValueTask<HttpResponseMessage> SendAsync(CancellationToken cancellationToken = default)
         {
             using var requestM = new HttpRequestMessage();
 
@@ -81,15 +86,21 @@ namespace TheProcessE.RestApiClient
             requestM.RequestUri = Uri;
             requestM.Method = HttpMethod;
 
-            HttpResponseMessage = await Client.SendAsync(requestM);
+            if(cancellationToken != default)
+
+                HttpResponseMessage = await Client.SendAsync(requestM, cancellationToken);
+            else
+
+                HttpResponseMessage = await Client.SendAsync(requestM);
+
             return HttpResponseMessage;
         }
 
-        public async ValueTask<HttpResponseMessage> SendSuppressExceptionAsync()
+        public async ValueTask<HttpResponseMessage> SendSuppressExceptionAsync(CancellationToken cancellationToken = default)
         {
             try
             {
-                return await SendAsync();
+                return await SendAsync(cancellationToken);
             }catch(Exception e)
             {
                 IsConnectionError = true;
