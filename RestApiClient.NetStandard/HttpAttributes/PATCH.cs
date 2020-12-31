@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using TheProcessE.RestApiClient;
+﻿
 using System.Net.Http;
 
-namespace TheProcessE.HttpAttributes
+namespace TheProcessE.RestApiClient
 {
     public class PATCH : HttpMethodAttribute
     {

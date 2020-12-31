@@ -1,13 +1,10 @@
-﻿using System;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace TheProcessE.RestApiClient
 {
     public abstract class RuntimeProxy
     {
-
         internal static Target Create<Target>(HttpClient client) where Target : class
         {
             return InternalProxy<Target>.Create(client);
@@ -29,9 +26,6 @@ namespace TheProcessE.RestApiClient
 
             protected override object Invoke(MethodInfo targetMethod, object[] args)
             {
-                //var methodCall = (IMethodCallMessage)msg;
-                //var method = (MethodInfo)methodCall.MethodBase;
-                //var method = (MethodInfo)methodCall.MethodBase;
 
                 var serviceMethodInfo = ServiceMethodInfo.CreateOrAdd<Target>(targetMethod, args, Client);
 

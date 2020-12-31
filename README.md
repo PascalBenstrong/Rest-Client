@@ -35,7 +35,7 @@ A simple HttpClient for making http requests
 
 ## Target FrameWork
 
-.NET Standard 2.1
+.NET Standard 2.0
 
 ## Test Example getting the posts from [json placeholder](https://jsonplaceholder.typicode.com/posts)
 

@@ -93,20 +93,20 @@ namespace System.Reflection
             if (nullableType != null)
                 return nullableType.Name + "?";
 
-            if (!(type.IsGenericType && type.Name.Contains('`')))
-                return type.Name switch
+            if (!(type.IsGenericType && type.Name.Contains("`")))
+            {
+                switch (type.Name)
                 {
-                    "String" => "string",
-                    "Int32" => "int",
-                    "Decimal" => "decimal",
-                    "Object" => "object",
-                    "Void" => "void",
-                    _ => string.IsNullOrWhiteSpace(type.FullName) ? type.Name : type.FullName
-                };
+                    case "String": return "string";
+                    case "Int32": return "int";
+                    case "Decimal": return "decimal";
+                    case "Object": return "object";
+                    case "Void": return "void";
+                    default: return string.IsNullOrWhiteSpace(type.FullName) ? type.Name : type.FullName;
+                }
+            }
 
-            var sb = new StringBuilder(type.Name.Substring(0,
-            type.Name.IndexOf('`'))
-            );
+            var sb = new StringBuilder(type.Name.Substring(0,type.Name.IndexOf('`')));
             sb.Append('<');
             var first = true;
             foreach (var t in type.GetGenericArguments())

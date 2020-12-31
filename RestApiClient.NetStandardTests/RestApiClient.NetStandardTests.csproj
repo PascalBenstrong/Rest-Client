@@ -5,9 +5,9 @@
 
     <IsPackable>false</IsPackable>
 
-    <AssemblyVersion>2020.1225.2234.0</AssemblyVersion>
+    <AssemblyVersion>2020.1225.2238.0</AssemblyVersion>
 
-    <FileVersion>2020.1225.2234.0</FileVersion>
+    <FileVersion>2020.1225.2238.0</FileVersion>
 
     <Configurations>Debug;Release;Preview</Configurations>
   </PropertyGroup>
