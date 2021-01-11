@@ -126,7 +126,7 @@ namespace TheProcessE.RestApiClient
                         }
                         else if (attr is PARAM param)
                         {
-                            relativeUrl = ParseParams(_relativeUrl, ref param, i, ref arguments);
+                            relativeUrl = ParseParams(relativeUrl, ref param, i, ref arguments);
                         }else if(attr is QUERY query)
                         {
                             var q = arguments[i]?.ToString();
