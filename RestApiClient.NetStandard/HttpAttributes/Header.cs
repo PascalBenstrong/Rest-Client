@@ -9,11 +9,11 @@ namespace TheProcessE.RestApiClient
         public string Key { get; }
         public string Value { get; }
         private IAuthModel authModel;
-        private IAuthModel AuthModel => (authModel != null || authModel != default) ? authModel : _authModelType != null ? authModel = Create(_authModelType) : default;
+        private IAuthModel AuthModel => (authModel != default) ? authModel : _authModelType != null ? authModel = Create(_authModelType) : default;
 
-        internal bool HasAuthModel => AuthModel != null && !string.IsNullOrWhiteSpace(AuthModel.Scheme) && !string.IsNullOrWhiteSpace(AuthModel.Token);
+        internal bool HasAuthModel => AuthModel != default && AuthModel.Authorization != default;
 
-        public AuthenticationHeaderValue Authentication => new AuthenticationHeaderValue(AuthModel.Scheme, AuthModel.Token);
+        public AuthenticationHeaderValue Authentication => AuthModel.Authorization;
 
         public HEADER(string key, string value)
         {

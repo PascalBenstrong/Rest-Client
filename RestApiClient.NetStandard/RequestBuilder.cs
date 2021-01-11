@@ -4,6 +4,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text.Json;
 using System.Threading;
+using System.Collections.Generic;
+using System.Net.Http.Headers;
 
 namespace TheProcessE.RestApiClient
 {
@@ -22,13 +24,31 @@ namespace TheProcessE.RestApiClient
         private readonly HttpContent HttpContent;
         private readonly Uri Uri;
         private readonly HttpClient Client;
+        private readonly HttpRequestHeaders Headers;
 
-        internal RequestBuilder(HttpMethod httpMethod, HttpContent httpContent, Uri uri, HttpClient client)
+        internal RequestBuilder(HttpMethod httpMethod, HttpContent httpContent, Uri uri, HttpClient client, IDictionary<string,string> headers)
         {
             HttpMethod = httpMethod;
             HttpContent = httpContent;
             Uri = uri;
             Client = client;
+            using var httpMessage = new HttpRequestMessage();
+            Headers = httpMessage.Headers;
+
+            foreach(var header in headers)
+            {
+                Headers.Add(header.Key, header.Value);
+            }
+        }
+
+        public void AddHeader(string key, string value)
+        {
+            Headers.Add(key, value);
+        }
+        
+        public void AddHeader(string key, IEnumerable<string> values)
+        {
+            Headers.Add(key, values);
         }
 
         public async ValueTask<string> GetResponseAsStringAsync(CancellationToken cancellationToken = default)
@@ -85,8 +105,15 @@ namespace TheProcessE.RestApiClient
                 requestM.Content = HttpContent;
             requestM.RequestUri = Uri;
             requestM.Method = HttpMethod;
+            // add the headers to the string content
 
-            if(cancellationToken != default)
+            Client.DefaultRequestHeaders.Clear();
+            foreach (var kp in Headers)
+            {
+                Client.DefaultRequestHeaders.Add(kp.Key, kp.Value);
+            }
+
+            if (cancellationToken != default)
 
                 HttpResponseMessage = await Client.SendAsync(requestM, cancellationToken);
             else

@@ -59,6 +59,18 @@ namespace TheProcessE.RestApiClient.Tests
         }
 
         [TestMethod()]
+        public async Task GetPostWithParamTest()
+        {
+            var requestBuilder = _service.GetPostWithParam(1);
+            var post = await requestBuilder.GetResponseAsync<Post>();
+
+            Assert.IsFalse(requestBuilder.IsConnectionError);
+            Assert.IsTrue(requestBuilder.IsSuccess);
+            Assert.IsNotNull(post);
+            TestContext.WriteLine(post.Title);
+        }
+
+        [TestMethod()]
         public async Task PostAPostTest()
         {
             var post = new Post

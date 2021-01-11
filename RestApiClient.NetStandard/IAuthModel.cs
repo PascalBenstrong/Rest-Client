@@ -1,10 +1,11 @@
 ﻿
+using System.Net.Http.Headers;
+
 namespace TheProcessE
 {
     public interface IAuthModel
     {
-        string Scheme { get; }
-        string Token { get; }
+        AuthenticationHeaderValue Authorization { get; }
 
         IAuthModel Create();
     }
